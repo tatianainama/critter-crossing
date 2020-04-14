@@ -1,66 +1,14 @@
 import React from 'react';
-import FISHES from './fish-data.json';
-import { Layout, Menu, Table } from 'antd';
+import FishTable from './Fish';
+import { Layout, Menu } from 'antd';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link } from 'react-router-dom';
 import './App.css';
+import InsectTable from './Insect';
 const { Header, Content, Footer } = Layout;
-
-const Bugs = () => {
-  return (
-    <h2> Bugs </h2>
-  )
-}
-
-// name: fish.name,
-// image: fish.imageLink,
-// price: fish.price,
-// location: mkLocation(fish.location),
-// time: mkTime(fish.time),
-// months: mkMonth(fish),
-// shadowSize: mkSize(fish.shadowSize)
-
-const Fishes = () => {
-  const columns = [
-    {
-      title: '',
-      dataIndex: 'image',
-      render: (image: string) => (<img src={image} alt='' className="fish-icon"/>)
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name'
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-    },
-    {
-      title: 'Time',
-      dataIndex: 'time'
-    },
-    {
-      title: 'Months',
-      dataIndex: 'months'
-    },
-    {
-      title: 'Price',
-      dataIndex: 'price'
-    },
-    {
-      title: 'Size',
-      dataIndex: 'shadowSize'
-    },
-  ];
-
-  return (
-    <Table columns={columns} dataSource={FISHES} size="small">
-    </Table>
-  )
-}
 
 const routes = [
   {
@@ -72,12 +20,12 @@ const routes = [
   {
     path: "/fishes",
     name: 'fishes',
-    component: Fishes
+    component: FishTable
   },
   {
-    path: "/bugs",
-    name: 'bugs',
-    component: Bugs
+    path: "/insects",
+    name: 'insects',
+    component: InsectTable
   }
 ];
 
@@ -112,11 +60,6 @@ const App: React.FunctionComponent = () => {
         </Layout>
 
       </Router>
-      {/* {
-        FISHES.map(fish => (
-          <p>{fish.name}</p>
-        ))
-      }       */}
     </div>
   );
 }
