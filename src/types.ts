@@ -2,11 +2,11 @@
 // Project: [~critter-crossing~]
 // Definitions by: [~tinama~]
 
-type Time = number[][];
-type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+export type Time = [number, number][];
+export type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 type FishLocationLabel = "River" | "River Clifftop" | "River Mouth" | "Pond" | "Sea" | "Pier";
-enum FishLocation {
-  River = 1,
+export enum FishLocation {
+  River,
   RiverClifftop,
   RiverMouth,
   Pond,
@@ -14,7 +14,7 @@ enum FishLocation {
   Pier
 }
 enum ShadowSize {
-  Tiny = 1,
+  Tiny,
   Small,
   Medium,
   Large,

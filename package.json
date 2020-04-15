@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.35",
+    "@types/ramda": "^0.27.3",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
     "antd": "^4.1.3",
