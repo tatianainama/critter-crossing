@@ -1,5 +1,7 @@
-import React, { FunctionComponent } from 'react';
-import { Table, Tag } from 'antd';
+import React, { FunctionComponent, useState } from 'react';
+import { Table, Tag, Button } from 'antd';
+import moment from 'moment';
+import { includes } from 'ramda';
 
 import FISHES from './fish-data.json';
 import { Fish, Month, Time, FishLocation } from './types';
@@ -11,6 +13,19 @@ type props = {
 const FishData = FISHES as unknown as Fish[];
 
 const FishTable: FunctionComponent<props> = () => {
+  const [ data, setData ] = useState<Fish[]>(FishData);
+
+  const isInTimeRange = (rangeTime: Time) => {
+    return rangeTime.some(([from, to]) => moment().isBetween(moment().hour(from).minute(0), moment().hour(to < from ? to + 24 : to).minute(0)));
+  }
+
+  const availableNow = () => {
+    const currentMonth = moment().month() + 1;
+    const xs = data.filter(fish => {
+      return includes(currentMonth, fish.months) && isInTimeRange(fish.time)
+    });
+    setData(xs)
+  } 
   const columns = [
     {
       title: '',
@@ -56,17 +71,26 @@ const FishTable: FunctionComponent<props> = () => {
   ];
 
   return (
+    <>
+    <div>
+      <Button onClick={() => availableNow()}>available now</Button>
+      <Button onClick={() => setData(FishData)}>show all</Button>
+    </div>
     <Table<Fish>
       columns={columns}
-      dataSource={FishData}
+      dataSource={data}
       size="small"
       pagination={false}
     >
     </Table>
+    </>
+
   )
 }
 
 const DisplayMonths: FunctionComponent<{months: Month[]}> = ({ months }) => {
+  const currentMonth = moment().get('month') as Month;
+
   const getColor = (month: number) => {
     switch (month) {
       case 12:
