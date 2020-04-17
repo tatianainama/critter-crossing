@@ -17,10 +17,24 @@ export const FishLocationLabel = [
   'pier'
 ];
 
+export const FishSizeLabel = [
+  '',
+  "Tiny",
+  "Small",
+  "Medium",
+  "Large",
+  "Very Large",
+  "Huge",
+  "Long",
+  "Fin"
+];
+
 export const parseMonth = (num: number) => month[num];
 export const parseFishLocation = (num: number) => FishLocationLabel[num];
+export const parseFishSize = (num: number) => FishSizeLabel[num];
 
 export default {
   parseMonth,
-  parseFishLocation
+  parseFishLocation,
+  parseFishSize,
 };

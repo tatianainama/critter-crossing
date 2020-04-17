@@ -5,7 +5,7 @@ import { includes } from 'ramda';
 
 import FISHES from './fish-data.json';
 import { Fish, Month, Time, FishLocation } from './types';
-import { parseMonth, parseFishLocation, FishLocationLabel } from './DataParser';
+import { parseMonth, parseFishLocation, FishLocationLabel, parseFishSize } from './DataParser';
 
 type props = {
 };
@@ -25,7 +25,8 @@ const FishTable: FunctionComponent<props> = () => {
       return includes(currentMonth, fish.months) && isInTimeRange(fish.time)
     });
     setData(xs)
-  } 
+  }
+
   const columns = [
     {
       title: '',
@@ -52,7 +53,7 @@ const FishTable: FunctionComponent<props> = () => {
       render: (time: Time) => DisplayTime({time})
     },
     {
-      title: 'Months',
+      title: 'Availability',
       dataIndex: 'months',
       render: (months: Month[]) => DisplayMonths({ months })
     },
@@ -66,7 +67,8 @@ const FishTable: FunctionComponent<props> = () => {
     },
     {
       title: 'Size',
-      dataIndex: 'shadowSize'
+      dataIndex: 'shadowSize',
+      render: (size: number) => parseFishSize(size)
     },
   ];
 
@@ -103,7 +105,7 @@ const showAvailability = (months: Month[]) => {
     const availableFrom = months.find(m => m > currentMonth) || 1;
     return {
       color: 'red',
-      text: `available from ${parseMonth(availableFrom)}`
+      text: `from ${parseMonth(availableFrom)}`
     }
   }
 
@@ -121,7 +123,7 @@ const showAvailability = (months: Month[]) => {
         text: 'last month available'
       } : {
         color: 'blue',
-        text: `available until ${parseMonth(actual)}`
+        text: `until ${parseMonth(actual)}`
       }
     } else {
       i = nextIteration(i);
