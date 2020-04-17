@@ -88,35 +88,51 @@ const FishTable: FunctionComponent<props> = () => {
   )
 }
 
-const DisplayMonths: FunctionComponent<{months: Month[]}> = ({ months }) => {
-  const currentMonth = moment().get('month') as Month;
+const showAvailability = (months: Month[]) => {
+  const currentMonth = (moment().get('month') as Month) + 1;
 
-  const getColor = (month: number) => {
-    switch (month) {
-      case 12:
-      case 1:
-      case 2:
-        return 'blue';
-      case 3:
-      case 4:
-      case 5:
-        return 'pink';
-      case 6:
-      case 7:
-      case 8:
-        return 'gold';
-      case 9:
-      case 10:
-      case 11:
-        return 'volcano'
+  if (months.length === 12){
+    return {
+      color: 'green',
+      text: 'all year'
     }
   }
+  const availableNow = months.findIndex(m => m === currentMonth);
+  
+  if (availableNow === -1) {
+    const availableFrom = months.find(m => m > currentMonth) || 1;
+    return {
+      color: 'red',
+      text: `available from ${parseMonth(availableFrom)}`
+    }
+  }
+
+  const nextIteration = (i: number) => (i + 1) % months.length;
+  
+  let i = availableNow;
+  while (true) {
+    const actual = months[i];
+    const next = months[nextIteration(i)];
+    
+    if ( (actual % 12) + 1 !== next) {
+      const lastMonth = actual === currentMonth;
+      return lastMonth ? {
+        color: 'orange',
+        text: 'last month available'
+      } : {
+        color: 'blue',
+        text: `available until ${parseMonth(actual)}`
+      }
+    } else {
+      i = nextIteration(i);
+    }
+  }
+}
+
+const DisplayMonths: FunctionComponent<{months: Month[]}> = ({ months }) => {
+  const result = showAvailability(months);
   return (
-    <div>
-      { months.map(month => (
-        <Tag key={month} color={getColor(month)}>{parseMonth(month)}</Tag>
-      ))}
-    </div>
+    <Tag color={result.color}>{result.text}</Tag>
   )
 }
 
