@@ -1,10 +1,22 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
 import { splitAt } from 'ramda';
+import fs from 'fs';
+import express from 'express';
 
 type DataParser = (td: Cheerio) => ({
   [x: string]: number | string | [number, number][]
 });
+
+type Fish = {
+  name: string,
+  img: string,
+  price: number,
+  location: string,
+  shadowSize: number,
+  time: [number, number][],
+  months: number[],
+}
 
 const mkLocation = (location: string): string => {
   switch (location) {
@@ -47,6 +59,33 @@ const parseMonths = (tr: CheerioElement[]) => {
   }, [])
 }
 
+export const saveImage = (fishes: Fish[]) => {
+  return Promise.all(fishes.map(async fish => {
+    const location = `images/fishes/${fish.name.replace(' ', '-')}.png`;
+    
+    const writer = fs.createWriteStream(`${__dirname}/../public/${location}`)
+    
+    const response = await axios.get(fish.img, {
+      responseType: 'stream'
+    });
+  
+    response.data.pipe(writer)
+    
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
+    }).then(result => {
+      return {
+        ...fish,
+        img: location
+      }
+    })
+  })).catch(error => {
+    console.error(error)
+    return fishes
+  })
+}
+
 const scrape = async () => {
   const html = await axios.get('https://animalcrossing.fandom.com/wiki/Fish_(New_Horizons)');
   const $ = cheerio.load(html.data, { normalizeWhitespace: true });
@@ -61,7 +100,7 @@ const scrape = async () => {
           ...fish,
           ...fishPropMap[i]($(td))
         };
-      }, {}),
+      }, {} as Fish),
       months: parseMonths(months)
     };
 
@@ -69,7 +108,7 @@ const scrape = async () => {
       ...fishes,
       fish
     ]
-  }, [] as object[]);
+  }, [] as Fish[]);
 
   return fishes;
 }

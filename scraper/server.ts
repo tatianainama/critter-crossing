@@ -1,9 +1,11 @@
 import express from 'express';
 
-import scrape from './scraper';
+import scrape, {saveImage} from './src/scraper';
 
 const app: express.Application = express();
 const port: number = 3001;
+
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
   scrape();
@@ -11,9 +13,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/fishes', (req, res) => {
-  return scrape().then(fishes => {
+  return scrape().then(saveImage).then((fishes => {
     return res.send(fishes);
-  })
+  }))
 })
 
 app.listen(port, () => {
