@@ -1,21 +1,28 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
-import { splitAt } from 'ramda';
+import { splitAt, reject } from 'ramda';
 import fs from 'fs';
-import express from 'express';
+
 
 type DataParser = (td: Cheerio) => ({
   [x: string]: number | string | [number, number][]
 });
 
-type Fish = {
+interface Critter {
   name: string,
   img: string,
   price: number,
   location: string,
-  shadowSize: number,
   time: [number, number][],
-  months: number[],
+  months: number[]
+}
+
+interface Fish extends Critter {
+  shadowSize: number,
+}
+
+interface Insect extends Critter {
+  flickPrice: number,
 }
 
 const mkLocation = (location: string): string => {
@@ -45,7 +52,7 @@ const mkTime = (time: string): [number, number][] => {
 }
 
 const fishPropMap: DataParser[] = [
-  td => ({name: td.text().trim()}),
+  td => ({ name: td.text().trim()}),
   td => ({ img: td.find('a').attr('href') || '' }),
   td => ({ price: parseInt(td.text().trim())}),
   td => ({ location: mkLocation(td.text().trim())}),
@@ -53,43 +60,51 @@ const fishPropMap: DataParser[] = [
   td => ({ time: mkTime(td.text().trim())})
 ]
 
+const insectPropMap: DataParser[] = [
+  td => ({ name: td.text().trim()}),
+  td => ({ img: td.find('a').attr('href') || '' }),
+  td => ({ price: parseInt(td.text().trim())}),
+  td => ({ location: td.text().trim()}),
+  td => ({ time: mkTime(td.text().trim())})
+];
+
 const parseMonths = (tr: CheerioElement[]) => {
   return tr.reduce<number[]>((calendar, td, month) => {
     return td.firstChild.data?.trim() === '✓' ? [ ...calendar, month+1 ] : [ ...calendar ]
   }, [])
 }
 
-export const saveImage = (fishes: Fish[]) => {
-  return Promise.all(fishes.map(async fish => {
-    const location = `images/fishes/${fish.name.replace(' ', '-')}.png`;
-    
-    const writer = fs.createWriteStream(`${__dirname}/../public/${location}`)
-    
-    const response = await axios.get(fish.img, {
-      responseType: 'stream'
-    });
-  
-    response.data.pipe(writer)
-    
-    return new Promise((resolve, reject) => {
-      writer.on('finish', resolve)
-      writer.on('error', reject)
-    }).then(result => {
-      return {
-        ...fish,
-        img: location
-      }
-    })
-  })).catch(error => {
-    console.error(error)
-    return fishes
+const isFish = (critter: Fish | Insect): critter is Fish => {
+  return (critter as Fish).shadowSize !== undefined;
+}
+
+const downloadImg = async (url: string, destinationPath: string) => {
+  const writer = fs.createWriteStream(`${__dirname}/../public/${destinationPath}`);
+  const response = await axios.get(url, { responseType: 'stream' });
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve)
+    writer.on('error', reject)
   })
 }
 
-const scrape = async () => {
-  const html = await axios.get('https://animalcrossing.fandom.com/wiki/Fish_(New_Horizons)');
-  const $ = cheerio.load(html.data, { normalizeWhitespace: true });
-  
+export const saveImage = (path: string) => (critters: Critter[]) => {
+  return Promise.all(critters.map(critter => {
+    const _path = `${path}${critter.name.replace(' ', '-')}.png`;
+    return downloadImg(critter.img, _path).then(result => ({
+      ...critter,
+      img: _path
+    }))
+  })).catch(error => {
+    console.error(error)
+    return critters
+  })
+}
+
+const scrapeFishes = async () => {
+  const $ = await scraper(process.env.AC_FISH);
+
   const rows = $('[title="Northern Hemisphere"] table.roundy.sortable tbody tr').toArray().slice(1);
   const fishes = rows.reduce((fishes, rowData) => {
     const [ fishData, months ] = splitAt(6, rowData.children.slice(1));
@@ -98,12 +113,11 @@ const scrape = async () => {
       ...fishData.reduce(( fish, td, i ) => {
         return {
           ...fish,
-          ...fishPropMap[i]($(td))
+          ...fishPropMap[i]($(td)),
         };
       }, {} as Fish),
       months: parseMonths(months)
     };
-
     return [
       ...fishes,
       fish
@@ -113,4 +127,36 @@ const scrape = async () => {
   return fishes;
 }
 
-export default scrape;
+export const scrapeInsects = async () => {
+  const $ = await scraper(process.env.AC_INSECT);
+
+  const rows = $('[title="Northern Hemisphere"] table.sortable tbody tr').toArray().slice(1);
+  const insects = rows.reduce((insects, rowData) => {
+    const [ insectData, months ] = splitAt(4, rowData.children.slice(1))
+    
+    const _insect = insectData.reduce(( insect, td, i ) => {
+      return {
+        ...insect,
+        ...insectPropMap[i]($(td))
+      }
+    }, {} as Insect);
+
+    return [
+      ...insects,
+      {
+        ..._insect,
+        flickPrice: _insect.price * 1.5,
+        months: parseMonths(months)
+      }
+    ]
+  }, [] as Insect[])
+
+  return insects;
+}
+
+const scraper = async (url?: string) => {
+  const html = await axios.get(url||'');
+  return cheerio.load(html.data, { normalizeWhitespace: true });
+}
+
+export default scrapeFishes;
