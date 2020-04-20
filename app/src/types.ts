@@ -24,7 +24,7 @@ enum ShadowSize {
   Fin
 }
 type ShadowSizeLabel = "Tiny" | "Small" | "Medium" | "Large" | "Very Large" | "Huge" | "Long" | "Fin";
-type BugLocation = "Flying" | "Flying by Hybrid Flowers" | "Flying by Light" | "On Trees" | "On the Ground" | "On Flowers" | "On Flowers (White)" | "Shaking Trees" | "Underground" | "On Ponds and Rivers" | "On Tree Stumps" | "On the Ground (rolling snowballs)" | "On Trees (Coconut)" | "Under Trees Disguised as Leafs" | "On rotten food" | "Beach disguised as Shells" | "On Beach Rocks" | "On Trash Items" | "Villager's Heads" | "On Rocks (Rain)" | "Hitting Rocks";
+type InsectLocation = "Flying" | "Flying by Hybrid Flowers" | "Flying by Light" | "On Trees" | "On the Ground" | "On Flowers" | "On Flowers (White)" | "Shaking Trees" | "Underground" | "On Ponds and Rivers" | "On Tree Stumps" | "On the Ground (rolling snowballs)" | "On Trees (Coconut)" | "Under Trees Disguised as Leafs" | "On rotten food" | "Beach disguised as Shells" | "On Beach Rocks" | "On Trash Items" | "Villager's Heads" | "On Rocks (Rain)" | "Hitting Rocks";
 
 export interface Critter {
   name: string,
@@ -39,9 +39,9 @@ export interface Fish extends Critter {
   shadowSize: ShadowSize
 }
 
-export interface Bug extends Critter {
+export interface Insect extends Critter {
   flickPrice: number,
-  location: BugLocation
+  location: InsectLocation
 }
 
 export default Critter;

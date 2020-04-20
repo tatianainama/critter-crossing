@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
-import { Table, Tag, Button } from 'antd';
 import moment from 'moment';
 import { includes } from 'ramda';
+import { getFishes } from 'services/Api';
 
 import FISHES from './fish-data.json';
 import { Fish, Month, Time, FishLocation } from 'types';
@@ -14,7 +14,7 @@ const FishData = FISHES as unknown as Fish[];
 
 const FishTable: FunctionComponent<props> = () => {
   const [ data, setData ] = useState<Fish[]>(FishData);
-
+  getFishes().then(data => console.log("fishes, ", data));
   const isInTimeRange = (rangeTime: Time) => {
     return rangeTime.some(([from, to]) => moment().isBetween(moment().hour(from).minute(0), moment().hour(to < from ? to + 24 : to).minute(0)));
   }
@@ -74,7 +74,7 @@ const FishTable: FunctionComponent<props> = () => {
 
   return (
     <>
-    <div>
+    {/* <div>
       <Button onClick={() => availableNow()}>available now</Button>
       <Button onClick={() => setData(FishData)}>show all</Button>
     </div>
@@ -84,7 +84,7 @@ const FishTable: FunctionComponent<props> = () => {
       size="small"
       pagination={false}
     >
-    </Table>
+    </Table> */}
     </>
 
   )
@@ -134,7 +134,8 @@ const showAvailability = (months: Month[]) => {
 const DisplayMonths: FunctionComponent<{months: Month[]}> = ({ months }) => {
   const result = showAvailability(months);
   return (
-    <Tag color={result.color}>{result.text}</Tag>
+    <div></div>
+    // <Tag color={result.color}>{result.text}</Tag>
   )
 }
 

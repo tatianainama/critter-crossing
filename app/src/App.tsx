@@ -1,16 +1,16 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link } from 'react-router-dom';
+} from 'react-router-dom';
+
 import 'App.css';
 
 import FishTable from 'Fishes';
 import InsectTable from 'Insects';
+import Navbar from 'components/Navbar';
 
-const { Header, Content, Footer } = Layout;
 const routes = [
   {
     path: "/",
@@ -32,35 +32,22 @@ const routes = [
 
 const App: React.FunctionComponent = () => {
   return (
-    <div className="App">
+    <div className="cc-app">
       <Router>
-        <Layout className="layout">
-          <Header>
-            <Menu theme="dark" mode="horizontal">
-              {
-                routes.map((route, key) => (
-                  <Menu.Item key={key}>
-                    <Link to={route.path}>{route.name}</Link>
-                  </Menu.Item>
-                ))
-              }
-            </Menu>
-          </Header>
-          <Content style={{ padding: '0 50px' }} className="site-layout-content">
-            <Switch>
-              {
-                routes.map((route, key) => (
-                  <Route key={key} path={route.path} exact={route.exact}>
-                    <route.component/>
-                  </Route>
-                ))
-              }
-            </Switch>
-          </Content>
-          <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
-        </Layout>
-
+        <Navbar routes={routes} />
+        <div className="cc-content">
+          <Switch>
+            {
+              routes.map((route, key) => (
+                <Route key={key} path={route.path} exact={route.exact}>
+                  <route.component/>
+                </Route>
+              ))
+            }
+          </Switch>
+        </div>
       </Router>
+      <div className="cc-footer"></div>
     </div>
   );
 }

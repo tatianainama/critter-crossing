@@ -12,6 +12,15 @@ if (process.env.AC_FISH === undefined || process.env.AC_INSECT === undefined) {
 }
 
 app.use(express.static('public'))
+app.use((req, res, next)=> {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  if ('OPTIONS' == req.method) {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+})
 
 app.get('/', (req, res) => { res.send('Hello World!') });
 

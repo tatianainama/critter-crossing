@@ -1,12 +1,10 @@
-@import '~antd/dist/antd.css';
-
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Dosis', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #343434;
+  background-color: #ebcac3;
 }
 
 code {
@@ -14,27 +12,18 @@ code {
     monospace;
 }
 
-.App {
+.cc-app {
   height: 100vh;
-}
-.layout {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.site-layout-content {
-  background: #fff;
-  padding: 24px;
-  height: 100%;
+.cc-content {
+  flex-grow: 1;
 }
 
 .fish-icon {
   width: 48px;
   height: auto;
 }
-#components-layout-demo-top .logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 24px 16px 0;
-  float: left;
-}
+
