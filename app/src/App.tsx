@@ -1,15 +1,16 @@
 import React from 'react';
-import FishTable from './Fish';
 import { Layout, Menu } from 'antd';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link } from 'react-router-dom';
-import './App.css';
-import InsectTable from './Insect';
-const { Header, Content, Footer } = Layout;
+import 'App.css';
 
+import FishTable from 'Fishes';
+import InsectTable from 'Insects';
+
+const { Header, Content, Footer } = Layout;
 const routes = [
   {
     path: "/",
