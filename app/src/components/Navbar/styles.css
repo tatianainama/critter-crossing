@@ -13,7 +13,8 @@
   padding: 0.2rem 5rem;
 }
 
-.cc-navbar .nav a:hover {
+.cc-navbar .nav a:hover,
+.cc-navbar .nav a.selected-page {
   text-decoration: none;
   color: #e58541;
 }

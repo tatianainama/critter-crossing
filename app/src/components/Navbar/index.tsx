@@ -1,7 +1,7 @@
 import React from 'react';
 import './styles.css';
 import { NavLink as Link } from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 
 type NavbarProps = {
   routes: {
@@ -18,8 +18,8 @@ const Navbar: React.FunctionComponent<NavbarProps> = ({ routes }) => {
       <Nav>
         {
           routes.map((route, key) => (
-            <NavItem>
-              <Link to={route.path} className="nav-link" activeClassName="selected-page" key={key}>{route.name}</Link>
+            <NavItem key={key}>
+              <Link to={route.path} className="nav-link" activeClassName="selected-page">{route.name}</Link>
             </NavItem>
           ))
         }

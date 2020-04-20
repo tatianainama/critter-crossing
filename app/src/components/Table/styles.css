@@ -1,0 +1,31 @@
+.table.critter-table {
+  color: #563928;
+  background-color: #ded9bc;
+  border-radius: 1rem;
+}
+
+.table.critter-table th {
+  border: 0;
+}
+
+.table.critter-table thead {
+  border-bottom: 2px dashed #785b31;
+}
+
+.table-hover.table.critter-table tbody tr:hover {
+  color: #563928;
+  background-color: rgba(0,0,0,.075);
+}
+
+.table.critter-table td.critter-img {
+  padding: 0;
+}
+
+.table.critter-table tr td {
+  border: 0;
+}
+
+td.critter-img img {
+  width: 48px;
+  height: auto;
+}

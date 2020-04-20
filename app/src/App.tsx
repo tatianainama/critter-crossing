@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-
+import { Container } from 'reactstrap';
 import 'App.css';
 
 import FishTable from 'Fishes';
@@ -36,15 +36,17 @@ const App: React.FunctionComponent = () => {
       <Router>
         <Navbar routes={routes} />
         <div className="cc-content">
-          <Switch>
-            {
-              routes.map((route, key) => (
-                <Route key={key} path={route.path} exact={route.exact}>
-                  <route.component/>
-                </Route>
-              ))
-            }
-          </Switch>
+          <Container>
+            <Switch>
+              {
+                routes.map((route, key) => (
+                  <Route key={key} path={route.path} exact={route.exact}>
+                    <route.component/>
+                  </Route>
+                ))
+              }
+            </Switch>
+          </Container>
         </div>
       </Router>
       <div className="cc-footer"></div>
