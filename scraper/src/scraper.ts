@@ -1,12 +1,16 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
-import { splitAt, reject } from 'ramda';
+import { splitAt, compose } from 'ramda';
 import fs from 'fs';
-
 
 type DataParser = (td: Cheerio) => ({
   [x: string]: number | string | [number, number][]
 });
+
+export enum CONFIG {
+  Fish,
+  Insect
+};
 
 interface Critter {
   name: string,
@@ -74,10 +78,6 @@ const parseMonths = (tr: CheerioElement[]) => {
   }, [])
 }
 
-const isFish = (critter: Fish | Insect): critter is Fish => {
-  return (critter as Fish).shadowSize !== undefined;
-}
-
 const downloadImg = async (url: string, destinationPath: string) => {
   const writer = fs.createWriteStream(`${__dirname}/../public/${destinationPath}`);
   const response = await axios.get(url, { responseType: 'stream' });
@@ -102,61 +102,76 @@ export const saveImage = (path: string) => (critters: Critter[]) => {
   })
 }
 
-const scrapeFishes = async () => {
-  const $ = await scraper(process.env.AC_FISH);
-
-  const rows = $('[title="Northern Hemisphere"] table.roundy.sortable tbody tr').toArray().slice(1);
-  const fishes = rows.reduce((fishes, rowData) => {
-    const [ fishData, months ] = splitAt(6, rowData.children.slice(1));
-
-    const fish = {
-      ...fishData.reduce(( fish, td, i ) => {
-        return {
-          ...fish,
-          ...fishPropMap[i]($(td)),
-        };
-      }, {} as Fish),
-      months: parseMonths(months)
-    };
-    return [
-      ...fishes,
-      fish
-    ]
-  }, [] as Fish[]);
-
-  return fishes;
+const getConfig = ({ url, type }: { url: string, type: CONFIG }): ScrapeConfig<Fish | Insect> => {
+  return type === CONFIG.Fish ? {
+    url,
+    tableSelector: '[title="Northern Hemisphere"] table.roundy.sortable tbody tr',
+    split: 6,
+    propMap: fishPropMap,
+  } : {
+    url,
+    tableSelector: '[title="Northern Hemisphere"] table.sortable tbody tr',
+    split: 4,
+    propMap: insectPropMap,
+    extraData: (insect) => ({ flickPrice: insect.price * 1.5 } as Insect)
+  }
 }
 
-export const scrapeInsects = async () => {
-  const $ = await scraper(process.env.AC_INSECT);
+export const INSECTS_CONFIG = (url: string): ScrapeConfig<Insect> => ({
+  url,
+  tableSelector: '[title="Northern Hemisphere"] table.sortable tbody tr',
+  split: 4,
+  propMap: insectPropMap,
+  extraData: (insect) => ({ flickPrice: insect.price * 1.5 } as Insect)
+})
 
-  const rows = $('[title="Northern Hemisphere"] table.sortable tbody tr').toArray().slice(1);
-  const insects = rows.reduce((insects, rowData) => {
-    const [ insectData, months ] = splitAt(4, rowData.children.slice(1))
+export const FISHES_CONFIG: (url: string) => ScrapeConfig<Fish> = url => ({
+  url,
+  tableSelector: '[title="Northern Hemisphere"] table.roundy.sortable tbody tr',
+  split: 6,
+  propMap: fishPropMap,
+})
+
+type ScrapeConfig<T> = {
+  url: string
+  tableSelector: string,
+  split: number,
+  propMap: DataParser[],
+  extraData?: (value: T) => T
+}
+
+export const getData = async <T>({ url, tableSelector, split, propMap, extraData }: ScrapeConfig<T>): Promise<T[]> => {
+  const $ = await scraper(url);
+  const rows = $(tableSelector).toArray().slice(1);
+  const data = rows.reduce((collection, rowData) => {
+    const [ mainData, months ] = splitAt(split, rowData.children.slice(1))
     
-    const _insect = insectData.reduce(( insect, td, i ) => {
+    const _critter = mainData.reduce(( critter, td, i ) => {
       return {
-        ...insect,
-        ...insectPropMap[i]($(td))
+        ...critter,
+        ...propMap[i]($(td))
       }
-    }, {} as Insect);
+    }, {} as T);
 
+    const _extra = extraData ? extraData(_critter) : {};
     return [
-      ...insects,
+      ...collection,
       {
-        ..._insect,
-        flickPrice: _insect.price * 1.5,
+        ..._critter,
+        ..._extra,
         months: parseMonths(months)
       }
     ]
-  }, [] as Insect[])
+  }, [] as T[])
 
-  return insects;
+  return data;
 }
 
-const scraper = async (url?: string) => {
-  const html = await axios.get(url||'');
+export const scrapeCritters = compose(getData, getConfig);
+
+const scraper = async (url: string) => {
+  const html = await axios.get(url);
   return cheerio.load(html.data, { normalizeWhitespace: true });
 }
 
-export default scrapeFishes;
+export default getData;
