@@ -56,7 +56,7 @@ const mkTime = (time: string): [number, number][] => {
 }
 
 const fishPropMap: DataParser[] = [
-  td => ({ name: td.text().trim()}),
+  td => ({ name: td.text().trim().toLowerCase()}),
   td => ({ img: td.find('a').attr('href') || '' }),
   td => ({ price: parseInt(td.text().trim())}),
   td => ({ location: mkLocation(td.text().trim())}),
@@ -65,7 +65,7 @@ const fishPropMap: DataParser[] = [
 ]
 
 const insectPropMap: DataParser[] = [
-  td => ({ name: td.text().trim()}),
+  td => ({ name: td.text().trim().toLowerCase()}),
   td => ({ img: td.find('a').attr('href') || '' }),
   td => ({ price: parseInt(td.text().trim())}),
   td => ({ location: td.text().trim()}),
