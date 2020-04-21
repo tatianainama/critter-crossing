@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import Critter, { Time, Month, Colors } from 'types';
 import { Table as Tb } from 'reactstrap';
 import Tag from 'components/Tag';
-
+import Button from 'components/Button';
 import moment from 'moment';
 // import { includes } from 'ramda';
 import { parseMonth } from 'services/DataParser';
@@ -87,6 +87,8 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
 
   return (
     <div className="cc-critter-schedule">
+      <Button>Show available now</Button>
+      <Button color='link'>link button yaya</Button>
       <Tb striped hover responsive className="critter-table">
         <thead>
           <tr>

@@ -20,11 +20,16 @@
 
 .table.critter-table td.critter-img {
   padding: 0;
+  text-align: center;
 }
 
 .table.critter-table tr td {
   border: 0;
   text-transform: capitalize;
+}
+
+.critter-table.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #d8d3b3;
 }
 
 td.critter-img img {

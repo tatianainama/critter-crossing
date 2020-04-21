@@ -1,0 +1,75 @@
+@keyframes clickIt{
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+button.cc-button {
+  border: none;
+  background-color: #f4f5e3;
+  color: #867969;
+  padding: 0.5rem 1rem;
+  border-radius: 40px;
+}
+
+button.cc-button:hover {
+  animation: clickIt 200ms ease;
+  color: #796c5d;
+}
+
+button.cc-button:active {
+  animation: clickIt 200ms ease;
+}
+button.cc-button:focus,
+button.cc-button:active {
+  outline: none;
+}
+
+button.cc-button.cc-button-primary {
+  border: none;
+  background-color: #14c5b5;
+  border-radius: 17% 19% 14% 16% / 49% 37% 45% 41%  ;
+  color: white;
+  letter-spacing: 0.02rem;
+  padding: 0.5rem 1rem;
+}
+
+button.cc-button.cc-button-primary:hover {
+  color: white;
+  background-color: #13b6a8;
+}
+
+button.cc-button.cc-button-primary:focus,
+button.cc-button.cc-button-primary:active {
+  outline: none;
+  background-color: #13b6a8;
+}
+
+button.cc-button.cc-button-primary:disabled {
+  background-color: #cdc7bb;
+  color: #928b83;
+}
+
+button.cc-button.cc-button-primary:disabled:hover,
+button.cc-button.cc-button-primary:disabled:active,
+button.cc-button.cc-button-primary:disabled:focus {
+  transform: none;
+  transition: none;
+}
+
+button.cc-button.cc-button-link {
+  background-color: transparent;
+}
+
+button.cc-button.cc-button-link:hover {
+  background-color: transparent;
+  color: #e58541;
+  animation: none;
+
+}
