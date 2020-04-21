@@ -1,0 +1,50 @@
+span.cc-tag {
+  padding: 0.1rem 0.3rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 0.4rem;
+  color: #282c34;
+}
+
+/* 'red' | 'orange'  | 'yellow' | 'pink' | 'green' | 'blue' | 'purple'; */
+
+span.cc-tag.cc-tag-red {
+  background-color: rgba(213, 96, 101, 0.3);
+  color: #d56065;
+  border-radius: 20% 46% 12% 16% / 29% 24% 42% 39%;
+}
+
+span.cc-tag.cc-tag-orange {
+  background-color: rgba(228, 157, 20, 0.3);
+  color: #e18341;
+  border-radius: 30% 13% 23% 10% / 32% 24% 21% 36%;
+}
+
+span.cc-tag.cc-tag-yellow {
+  background-color: rgba(231, 195, 25, 0.3);
+  color: #e39e16;
+  border-radius: 34% 43% 37% 15% / 32% 24% 50% 36% ;
+}
+
+span.cc-tag.cc-tag-pink {
+  background-color: rgba(230, 182, 185, 0.3);
+  color: #e28a9e;
+  border-radius: 20% 46% 12% 16% / 29% 24% 42% 39%;
+}
+
+span.cc-tag.cc-tag-green {
+  background-color: rgba(165, 205, 166, 0.3);
+  color: #7ba371;
+  border-radius: 30% 13% 23% 10% / 32% 24% 21% 36%;
+}
+
+span.cc-tag.cc-tag-blue {
+  background-color: rgba(127, 188, 229, 0.3);
+  color: #389cd3;
+  border-radius: 34% 43% 37% 15% / 32% 24% 50% 36% ;
+}
+
+span.cc-tag.cc-tag-purple {
+  background-color: rgba(165, 118, 227, 0.3);
+  color: #a576e3;
+  border-radius: 19% 43% 18% 33% / 32% 24% 50% 36% ;
+}

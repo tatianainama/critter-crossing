@@ -10,6 +10,7 @@
 
 .table.critter-table thead {
   border-bottom: 2px dashed #785b31;
+  text-transform: capitalize;
 }
 
 .table-hover.table.critter-table tbody tr:hover {
@@ -23,6 +24,7 @@
 
 .table.critter-table tr td {
   border: 0;
+  text-transform: capitalize;
 }
 
 td.critter-img img {

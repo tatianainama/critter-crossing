@@ -44,4 +44,5 @@ enum ShadowSize {
 type ShadowSizeLabel = "Tiny" | "Small" | "Medium" | "Large" | "Very Large" | "Huge" | "Long" | "Fin";
 type InsectLocation = "Flying" | "Flying by Hybrid Flowers" | "Flying by Light" | "On Trees" | "On the Ground" | "On Flowers" | "On Flowers (White)" | "Shaking Trees" | "Underground" | "On Ponds and Rivers" | "On Tree Stumps" | "On the Ground (rolling snowballs)" | "On Trees (Coconut)" | "Under Trees Disguised as Leafs" | "On rotten food" | "Beach disguised as Shells" | "On Beach Rocks" | "On Trash Items" | "Villager's Heads" | "On Rocks (Rain)" | "Hitting Rocks";
 
+export type Colors = 'red' | 'orange'  | 'yellow' | 'pink' | 'green' | 'blue' | 'purple';
 export default Critter;

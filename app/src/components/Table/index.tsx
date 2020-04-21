@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
-import Critter, { Time, Month } from 'types';
+import Critter, { Time, Month, Colors } from 'types';
 import { Table as Tb } from 'reactstrap';
+import Tag from 'components/Tag';
+
 import moment from 'moment';
 // import { includes } from 'ramda';
 import { parseMonth } from 'services/DataParser';
@@ -22,7 +24,7 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
   //   });
   // }
   
-  const showAvailability = (months: Month[]) => {
+  const showAvailability = (months: Month[]): { color: Colors, text: string} => {
     const currentMonth = (moment().get('month') as Month) + 1;
   
     if (months.length === 12){
@@ -36,7 +38,7 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
     if (availableNow === -1) {
       const availableFrom = months.find(m => m > currentMonth) || 1;
       return {
-        color: 'red',
+        color: 'purple',
         text: `from ${parseMonth(availableFrom)}`
       }
     }
@@ -51,10 +53,10 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
       if ( (actual % 12) + 1 !== next) {
         const lastMonth = actual === currentMonth;
         return lastMonth ? {
-          color: 'orange',
+          color: 'red',
           text: 'last month available'
         } : {
-          color: 'blue',
+          color: 'orange',
           text: `until ${parseMonth(actual)}`
         }
       } else {
@@ -66,7 +68,7 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
   const DisplayMonths: FunctionComponent<{months: Month[]}> = ({ months }) => {
     const result = showAvailability(months);
     return (
-      <div>{result.text}</div>
+      <Tag color={result.color}>{result.text}</Tag>
     )
   }
   
@@ -84,7 +86,7 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
   }
 
   return (
-    <div>
+    <div className="cc-critter-schedule">
       <Tb striped hover responsive className="critter-table">
         <thead>
           <tr>
