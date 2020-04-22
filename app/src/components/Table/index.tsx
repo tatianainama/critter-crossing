@@ -3,6 +3,7 @@ import Critter, { Time, Month, Colors } from 'types';
 import { Table as Tb } from 'reactstrap';
 import Tag from 'components/Tag';
 import Button from 'components/Button';
+import Input from 'components/Input';
 import moment from 'moment';
 import { parseMonth } from 'services/DataParser';
 import { includes } from 'ramda';
@@ -82,16 +83,19 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
 
   const [ state, setState ] = useState<{
     critters: Critter[],
-    relevant: Critter[]
+    relevant: Critter[],
+    search: string,
   }>({
     critters: data,
     relevant: data,
+    search: ''
   });
 
   useEffect(() => {
     setState({
+      ...state,
       relevant: data,
-      critters: data
+      critters: data,
     })
   }, [data]);
 
@@ -113,9 +117,23 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
     })
   }
 
+  const search = () => {
+    const { critters, search } = state;
+    const result = critters.filter(critter => includes(search.toLowerCase(), critter.location.toLowerCase()) || includes(search.toLowerCase(), critter.name.toLowerCase()));
+  
+    setState({
+      ...state,
+      relevant: result
+    })
+  }
+
   return (
     <div className="cc-critter-schedule">
       <div className="cc-critter-schedule-actions">
+        <div className="cc-critter-schedule-actions-search">
+          <Input value={state.search} handleChange={(_filter) => { setState({...state, search: _filter})}}/>
+          <Button onClick={() => search()}>search</Button>
+        </div>
         <Button onClick={() => { availableNow() }} color="primary">Available now</Button>
         <Button onClick={() => { showAll() }}>Show all</Button>
       </div>

@@ -36,3 +36,8 @@ td.critter-img img {
   width: 48px;
   height: auto;
 }
+
+.cc-critter-schedule-actions {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,0 +1,13 @@
+input.cc-input {
+  border-radius: 19% 14% 16% / 49% 37% 45% 41%;
+  box-shadow: none;
+  border: none;
+  padding: 1rem;
+  color: #686256;
+  height: 2.5rem;
+}
+
+input.cc-input:focus {
+  outline: none;
+  caret-color: #14c5b5;
+}
