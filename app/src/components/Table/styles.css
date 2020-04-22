@@ -39,5 +39,10 @@ td.critter-img img {
 
 .cc-critter-schedule-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  padding: 1rem 0;
+}
+.cc-critter-schedule-actions > div,
+.cc-critter-schedule-actions > button {
+  margin-left: 1rem;
 }
