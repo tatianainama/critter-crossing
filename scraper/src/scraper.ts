@@ -111,7 +111,7 @@ const getConfig = ({ url, type }: { url: string, type: CONFIG }): ScrapeConfig<F
   } : {
     url,
     tableSelector: '[title="Northern Hemisphere"] table.sortable tbody tr',
-    split: 4,
+    split: 5,
     propMap: insectPropMap,
     extraData: (insect) => ({ flickPrice: insect.price * 1.5 } as Insect)
   }
@@ -120,7 +120,7 @@ const getConfig = ({ url, type }: { url: string, type: CONFIG }): ScrapeConfig<F
 export const INSECTS_CONFIG = (url: string): ScrapeConfig<Insect> => ({
   url,
   tableSelector: '[title="Northern Hemisphere"] table.sortable tbody tr',
-  split: 4,
+  split: 5,
   propMap: insectPropMap,
   extraData: (insect) => ({ flickPrice: insect.price * 1.5 } as Insect)
 })
