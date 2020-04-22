@@ -174,4 +174,12 @@ const scraper = async (url: string) => {
   return cheerio.load(html.data, { normalizeWhitespace: true });
 }
 
+export const storeData = (path: string) => <T>(data: T[]) => {
+  try {
+    fs.writeFileSync(path, JSON.stringify(data));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 export default getData;
