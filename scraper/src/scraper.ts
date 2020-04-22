@@ -38,21 +38,20 @@ const mkLocation = (location: string): string => {
   }
 }
 
+const convertTo24 = (ranges: [string, string][]) => {
+  const xs = ranges.map(range => range.map(time => {
+    const [ hour, period ] = time.split(' ');
+    return parseInt(hour) + (period === 'AM' ? 0 : 12);
+  })) as [number, number][]
+  return xs;
+}
+
 const mkTime = (time: string): [number, number][] => {
-  switch (time) {
-    case '9 AM - 4 PM':
-      return [[9, 16]];
-    case '4 PM - 9 AM':
-      return [[16, 9]];
-    case '9 PM - 4 AM':
-      return [[21, 4]];
-    case '9 AM - 4 PM & 9 PM - 4 AM':
-      return [[9, 16], [21, 4]];
-    case '4 AM - 9 PM':
-      return [[4, 21]];
-    default:
-      return [[0, 24]];
+  if ( time === 'All day') {
+    return [[0, 24]]
   }
+  const times = time.split(' & ').map(t => t.split(' - ')) as [string, string][];
+  return convertTo24(times)
 }
 
 const fishPropMap: DataParser[] = [
