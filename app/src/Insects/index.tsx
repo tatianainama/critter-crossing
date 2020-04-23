@@ -1,24 +1,49 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
 import { Insect } from 'types';
 import { getInsects } from 'services/Api';
-import Table from 'components/Table';
+import Table, { Column } from 'components/Table';
 
 const InsectTable: FunctionComponent = () => {
   const [ data, setData ] = useState<Insect[]>([]);
-  
-  const fetchData = async () => {
-    const response = await getInsects()
-    setData(response)
-  }
+  const columns: Column<Insect>[] = [
+    {
+      label: 'name',
+      key: 'name'
+    },
+    {
+      label: 'price',
+      key: 'price'
+    },
+    {
+      label: 'flicks',
+      key: 'flickPrice'
+    },
+    {
+      label: 'location',
+      key: 'location'
+    },
+    {
+      label: 'time',
+      key: 'time',
+      type: "time"
+    },
+    {
+      label: 'availability',
+      key: 'months',
+      type: 'month'
+    }
+  ]
   
   useEffect(() => {
-    fetchData();
+    getInsects().then(setData)
   }, [])
   
   return (
     <>
-      <Table data={data}></Table>
+      <Table data={data} columns={columns}></Table>
     </>
+
+
   
   )
 };

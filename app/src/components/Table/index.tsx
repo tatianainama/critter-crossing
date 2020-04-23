@@ -10,8 +10,16 @@ import { includes } from 'ramda';
 
 import './styles.css';
 
-type TableProps = {
-  data: Critter[],
+export type Column<T> = {
+  label: string,
+  key: keyof T,
+  type?: 'time' | 'month',
+  display?: (critter: T) => string
+};
+
+interface TableProps<T> {
+  data: T[],
+  columns: Column<T>[]
 }
 
 const showAvailability = (months: Month[]): { color: Colors, text: string} => {
@@ -75,17 +83,20 @@ const DisplayTime: FunctionComponent<{time: Time}> = ({ time }) => {
   );
 }
 
+const DisplayData = (type: 'time' | 'month') => type === 'time' ? DisplayTime : DisplayMonths;
+
 const isInTimeRange = (rangeTime: Time) => {
   return rangeTime.some(([from, to]) => moment().isBetween(moment().hour(from).minute(0), moment().hour(to < from ? to + 24 : to).minute(0)));
 }
 
-const Table: FunctionComponent<TableProps> = ({ data }) => {
+type State<T> = {
+  critters: T[],
+  relevant: T[],
+  search: string,
+}
+const Table = <T extends Critter>({ data, columns }: TableProps<T>) => {
 
-  const [ state, setState ] = useState<{
-    critters: Critter[],
-    relevant: Critter[],
-    search: string,
-  }>({
+  const [ state, setState ] = useState<State<T>>({
     critters: data,
     relevant: data,
     search: ''
@@ -93,7 +104,7 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
 
   useEffect(() => {
     setState({
-      ...state,
+      search:'',
       relevant: data,
       critters: data,
     })
@@ -141,11 +152,11 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
         <thead>
           <tr>
             <th></th>
-            <th>Name</th>
-            <th>price</th>
-            <th>location</th>
-            <th>time</th>
-            <th>availability</th>
+            {
+              columns.map(({ label }, key) => (
+                <th key={key}>{label}</th>
+              ))
+            }
           </tr>
         </thead>
         <tbody>
@@ -153,11 +164,16 @@ const Table: FunctionComponent<TableProps> = ({ data }) => {
             state.relevant.map((critter, key) => (
               <tr key={key}>
                 <td className="critter-img"><img className="critter-img" src={`${process.env.REACT_APP_API}/${critter.img}`} alt={critter.name}/></td>
-                <td>{critter.name}</td>
-                <td>{critter.price}</td>
-                <td>{critter.location}</td>
-                <td>{DisplayTime(critter)}</td>
-                <td>{DisplayMonths(critter)}</td>
+                {
+                  columns.map(({ key, display, type }, i) => (
+                      <td key={i}>
+                        { type ? DisplayData(type)(critter) :
+                          display ? display(critter) :
+                          critter[key]
+                        }
+                      </td>
+                  ))
+                }
               </tr>
             ))
           }

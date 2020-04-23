@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
 import { getFishes } from 'services/Api';
-import Table from 'components/Table';
+import Table, { Column } from 'components/Table';
 import { Fish } from 'types';
 
 type props = {
@@ -9,18 +9,42 @@ type props = {
 const FishTable: FunctionComponent<props> = () => {
   const [ data, setData ] = useState<Fish[]>([]);
 
-  const fetchData = async () => {
-    const response = await getFishes()
-    setData(response)
-  }
+  const columns: Column<Fish>[] = [
+    {
+      label: 'name',
+      key: 'name'
+    },
+    {
+      label: 'price',
+      key: 'price'
+    },
+    {
+      label: 'location',
+      key: 'location'
+    },
+    {
+      label: 'size',
+      key: 'shadowSize'
+    },
+    {
+      label: 'time',
+      key: 'time',
+      type: "time"
+    },
+    {
+      label: 'availability',
+      key: 'months',
+      type: 'month'
+    }
+  ]
 
   useEffect(() => {
-    fetchData();
+    getFishes().then(setData)
   }, [])
 
   return (
     <>
-    <Table data={data}></Table>
+      <Table data={data} columns={columns}></Table>
     </>
 
   )
