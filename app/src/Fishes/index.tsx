@@ -2,6 +2,7 @@ import React, { FunctionComponent, useState, useEffect } from 'react';
 import { getFishes } from 'services/Api';
 import Table, { Column } from 'components/Table';
 import { Fish } from 'types';
+import { prop, path } from 'ramda';
 
 type props = {
 };
@@ -16,11 +17,13 @@ const FishTable: FunctionComponent<props> = () => {
     },
     {
       label: 'price',
-      key: 'price'
+      key: 'price',
+      sort: prop('price')
     },
     {
       label: 'location',
-      key: 'location'
+      key: 'location',
+      sort: prop('location'),
     },
     {
       label: 'size',
@@ -29,7 +32,8 @@ const FishTable: FunctionComponent<props> = () => {
     {
       label: 'time',
       key: 'time',
-      type: "time"
+      type: 'time',
+      sort: path(['time', '0', '0']) as <T>(critter: Record<string, T>) => T
     },
     {
       label: 'availability',

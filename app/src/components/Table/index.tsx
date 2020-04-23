@@ -6,7 +6,8 @@ import Button from 'components/Button';
 import Input from 'components/Input';
 import moment from 'moment';
 import { parseMonth } from 'services/DataParser';
-import { includes } from 'ramda';
+import { includes, descend, ascend, sortWith } from 'ramda';
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 import './styles.css';
 
@@ -14,13 +15,31 @@ export type Column<T> = {
   label: string,
   key: keyof T,
   type?: 'time' | 'month',
-  display?: (critter: T) => string
+  display?: (critter: T) => string,
+  sort?: (critter: Record<string, T>) => T
+};
+
+enum SortDirection {
+  Asc,
+  Desc
 };
 
 interface TableProps<T> {
   data: T[],
   columns: Column<T>[]
-}
+};
+
+type Sort<T> = [
+  SortDirection | undefined,
+  (critter: Record<string, T>) => T
+]
+
+type Actions<T> = {
+  search: string,
+  sort: {
+    [key: string]: Sort<T>
+  }
+};
 
 const showAvailability = (months: Month[]): { color: Colors, text: string} => {
   const currentMonth = (moment().get('month') as Month) + 1;
@@ -89,60 +108,112 @@ const isInTimeRange = (rangeTime: Time) => {
   return rangeTime.some(([from, to]) => moment().isBetween(moment().hour(from).minute(0), moment().hour(to < from ? to + 24 : to).minute(0)));
 }
 
-type State<T> = {
-  critters: T[],
-  relevant: T[],
-  search: string,
-}
 const Table = <T extends Critter>({ data, columns }: TableProps<T>) => {
 
-  const [ state, setState ] = useState<State<T>>({
-    critters: data,
-    relevant: data,
-    search: ''
-  });
+  const [ critters, setState ] = useState<T[]>(data);
+
+  const [ actions, setAction ] = useState<Actions<T>>({
+    search: '',
+    sort: {}
+  })
 
   useEffect(() => {
-    setState({
-      search:'',
-      relevant: data,
-      critters: data,
+    setState(data)
+    setAction({
+      search: '',
+      sort: columns.reduce((_sort, col) => {
+        if (col.sort) {
+          return {
+            ..._sort,
+            [col.key]: [
+              undefined,
+              col.sort
+            ]
+          }
+        }
+        return _sort
+      }, {})
     })
-  }, [data]);
+  }, [data, columns]);
 
   const availableNow = () => {
     const currentMonth = moment().month() + 1;
-    const result = state.critters.filter(critter => {
+    const result = critters.filter(critter => {
       return includes(currentMonth, critter.months) && isInTimeRange(critter.time)
     });
-    setState({
-      ...state,
-      relevant: result
-    })
+    setState(result)
   }
 
   const showAll = () => {
-    setState({
-      ...state,
-      relevant: [...state.critters]
+    setState(data)
+    setAction({
+      search: '',
+      sort: Object.keys(actions.sort).reduce((_sort, key) => {
+        return {
+          ..._sort,
+          [key]: [
+            undefined,
+            actions.sort[key][1]
+          ]
+        }
+      }, {})
     })
   }
 
   const search = () => {
-    const { critters, search } = state;
+    const { search } = actions;
     const result = critters.filter(critter => includes(search.toLowerCase(), critter.location.toLowerCase()) || includes(search.toLowerCase(), critter.name.toLowerCase()));
   
-    setState({
-      ...state,
-      relevant: result
-    })
+    setState(result)
+  }
+
+  const sortData = (_actions: Actions<T>) => {
+     const sorts = Object.keys(_actions.sort).reduce<((a: Record<string, T>, b: Record<string, T>) => number)[]>((_sort, key) => {
+      const [ direction, sort] = _actions.sort[key];
+      if (direction === undefined) {
+        return _sort
+      } else {
+        const x = direction === SortDirection.Asc ? ascend(sort) : descend(sort);
+        return [
+          ..._sort,
+          x
+        ]
+      }
+     }, []);
+     const _sorted = sortWith(sorts, critters as unknown[] as (Array<Record<string, T>>)) as unknown[] as T[];
+     setState(_sorted);
+  }
+
+  const setSort = (key: string, sort: Sort<T>) => {
+    const _actions = {
+      search: actions.search,
+      sort: {
+        ...actions.sort,
+        [key]: sort
+      }
+    }
+    sortData(_actions);
+    setAction(_actions);
+  }
+
+  const showSortIcon = (key: string, sort: ((critter: Record<string, T>) => T)) => {
+    const value = actions.sort[key];
+    if (value === undefined || value[0] === undefined) {
+      return (<FaSort onClick={() => {setSort(key, [SortDirection.Asc, sort])}}/>)
+    } else {
+      return value[0] === SortDirection.Asc ? (
+        <FaSortUp onClick={() => {setSort(key, [SortDirection.Desc, sort])}}/>
+      ) : (
+        <FaSortDown onClick={() => {setSort(key, [SortDirection.Asc, sort])}}/>
+      )
+    }
   }
 
   return (
     <div className="cc-critter-schedule">
       <div className="cc-critter-schedule-actions">
         <div className="cc-critter-schedule-actions-search">
-          <Input value={state.search} handleChange={(_filter) => { setState({...state, search: _filter})}}/>
+          <Input value={actions.search} handleChange={(_filter) => { setAction({...actions, search: _filter})}}/>
           <Button onClick={() => search()}>search</Button>
         </div>
         <Button onClick={() => { availableNow() }} color="primary">Available now</Button>
@@ -153,15 +224,15 @@ const Table = <T extends Critter>({ data, columns }: TableProps<T>) => {
           <tr>
             <th></th>
             {
-              columns.map(({ label }, key) => (
-                <th key={key}>{label}</th>
+              columns.map(({ label, sort, key }, i) => (
+                <th key={i}>{label} {sort ? showSortIcon(key as string, sort) : null}</th>
               ))
             }
           </tr>
         </thead>
         <tbody>
           {
-            state.relevant.map((critter, key) => (
+            critters.map((critter, key) => (
               <tr key={key}>
                 <td className="critter-img"><img className="critter-img" src={`${process.env.REACT_APP_API}/${critter.img}`} alt={critter.name}/></td>
                 {
